@@ -1131,6 +1131,123 @@
       letter-spacing: 0.06em;
       line-height: 2.1;
     }
+    .twin-ten {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      touch-action: manipulation;
+    }
+    .twin-ten:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px hsla(25, 20%, 20%, 0.1);
+    }
+    .twin-ten:active { transform: scale(0.98); }
+    .twin-ten .hint {
+      position: relative;
+      z-index: 1;
+      margin-top: 16px;
+      font-size: 11px;
+      color: hsla(42, 35%, 42%, 0.85);
+      letter-spacing: 0.12em;
+    }
+    .twin-ten .hint span {
+      display: inline-block;
+      animation: musicTipPulse 1.8s ease-in-out infinite;
+    }
+
+    /* 带「十」成语弹窗 */
+    .ten-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 220;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(25, 18, 12, 0);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, background 0.3s ease, visibility 0.3s;
+    }
+    .ten-modal.open {
+      opacity: 1;
+      visibility: visible;
+      background: rgba(25, 18, 12, 0.55);
+    }
+    .ten-modal-card {
+      width: min(92vw, 320px);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 36px 26px 26px;
+      border-radius: 22px;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, hsla(42, 55%, 85%, 0.65), transparent 55%),
+        linear-gradient(165deg, #fffaf3 0%, #f6ebda 100%);
+      border: 1.5px solid hsla(42, 45%, 58%, 0.4);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.22);
+      transform: scale(0.88) translateY(16px);
+      opacity: 0;
+      transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+    }
+    .ten-modal.open .ten-modal-card {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+    .ten-modal-card::before {
+      content: '十';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -54%);
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 160px;
+      color: hsla(42, 40%, 55%, 0.08);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .ten-modal-label {
+      position: relative;
+      z-index: 1;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--primary);
+      margin-bottom: 14px;
+    }
+    .ten-modal-idiom {
+      position: relative;
+      z-index: 1;
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: clamp(36px, 11vw, 44px);
+      color: hsl(28, 28%, 22%);
+      letter-spacing: 0.28em;
+      text-indent: 0.28em;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      animation: datePop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .ten-modal-meaning {
+      position: relative;
+      z-index: 1;
+      font-size: 13.5px;
+      color: var(--muted-foreground);
+      letter-spacing: 0.06em;
+      line-height: 1.85;
+      margin-bottom: 22px;
+    }
+    .ten-modal-close {
+      position: relative;
+      z-index: 1;
+      min-width: 128px;
+      padding: 11px 22px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, hsl(42, 52%, 52%), hsl(38, 48%, 42%));
+      color: #fff;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      box-shadow: 0 8px 20px hsla(42, 50%, 45%, 0.35);
+    }
+    .ten-modal-close:active { transform: scale(0.97); }
 
     .photo-grid {
       display: grid;
@@ -2312,6 +2429,16 @@
     </div>
   </div>
 
+  <!-- 双十成语弹窗 -->
+  <div class="ten-modal" id="tenModal" aria-hidden="true">
+    <div class="ten-modal-card" role="dialog" aria-modal="true" aria-labelledby="tenModalIdiom">
+      <p class="ten-modal-label">今日「十」成语</p>
+      <h3 class="ten-modal-idiom" id="tenModalIdiom">十全十美</h3>
+      <p class="ten-modal-meaning" id="tenModalMeaning">完美无缺，事事如意</p>
+      <button type="button" class="ten-modal-close" id="tenModalClose">真好</button>
+    </div>
+  </div>
+
   <!-- Toast 容器 -->
   <div class="toast-container" id="toastContainer"></div>
 
@@ -2566,7 +2693,7 @@
         </article>
       </div>
 
-      <div class="twin-ten fade-up">
+      <div class="twin-ten fade-up" id="twinTen" role="button" tabindex="0" aria-label="点击领取带十的成语">
         <div class="pair">
           <p>阳历八月十日 · 领证成家</p>
           <p>农历八月初十 · 执手成婚</p>
@@ -2578,6 +2705,7 @@
           <p>一份写进红本本 · 一份写进婚礼里</p>
           <p>合法与仪式，都刚好落在十</p>
         </div>
+        <p class="hint"><span>点击领取一个带「十」的成语 ♪</span></p>
       </div>
 
       <div class="text-block fade-up">
@@ -3719,6 +3847,92 @@
       });
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && modal.classList.contains('open')) closeDate();
+      });
+    })();
+
+    // ========== 双十同喜 · 带「十」成语 ==========
+    (function() {
+      var card = $('#twinTen');
+      var modal = $('#tenModal');
+      var idiomEl = $('#tenModalIdiom');
+      var meaningEl = $('#tenModalMeaning');
+      var closeBtn = $('#tenModalClose');
+      if (!card || !modal) return;
+
+      var IDIOMS = [
+        { word: '十全十美', mean: '完美无缺，事事如意' },
+        { word: '十里红妆', mean: '旧时婚嫁盛景，喜气满途' },
+        { word: '十指连心', mean: '彼此牵挂，心心相系' },
+        { word: '十年之约', mean: '长长久久，信守相伴' },
+        { word: '十里春风', mean: '春意正好，暖意如约' },
+        { word: '五光十色', mean: '人生多彩，余生同看' },
+        { word: '十步芳草', mean: '处处有美好，眼里都是你' },
+        { word: '十雨五风', mean: '风调雨顺，日子安稳' },
+        { word: '十载春秋', mean: '岁月绵长，慢慢变老' },
+        { word: '十全其美', mean: '样样圆满，双喜临门' },
+        { word: '十里姻缘', mean: '千里姻缘一线牵' },
+        { word: '十指紧扣', mean: '手握着手，走到白头' },
+        { word: '十斛明珠', mean: '珍重彼此，视若明珠' }
+      ];
+
+      var bag = [];
+      var lastWord = '';
+
+      function shuffle(arr) {
+        for (var i = arr.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = arr[i];
+          arr[i] = arr[j];
+          arr[j] = t;
+        }
+        return arr;
+      }
+
+      function nextIdiom() {
+        if (!bag.length) {
+          bag = shuffle(IDIOMS.slice());
+          if (bag.length > 1 && bag[0].word === lastWord) {
+            var swap = bag[0];
+            bag[0] = bag[1];
+            bag[1] = swap;
+          }
+        }
+        var item = bag.shift();
+        lastWord = item.word;
+        return item;
+      }
+
+      function openTen() {
+        var item = nextIdiom();
+        idiomEl.textContent = item.word;
+        meaningEl.textContent = item.mean;
+        idiomEl.style.animation = 'none';
+        void idiomEl.offsetWidth;
+        idiomEl.style.animation = '';
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeTen() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      card.addEventListener('click', openTen);
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openTen();
+        }
+      });
+      closeBtn.addEventListener('click', closeTen);
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeTen();
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeTen();
       });
     })();
   </script>
