@@ -346,11 +346,15 @@
     .music-btn:hover { background: rgba(255,255,255,0.32); transform: scale(1.06); }
     .music-btn:active { transform: scale(0.94); }
     .music-btn svg { width: 20px; height: 20px; }
+    .music-btn .music-slash {
+      transition: opacity 0.2s ease;
+    }
     .music-btn.playing {
       background: rgba(255,255,255,0.32);
       box-shadow: 0 4px 20px rgba(212,175,55,0.35);
     }
     .music-btn.playing svg { animation: spin 4s linear infinite; }
+    .music-btn.playing .music-slash { opacity: 0; }
     .music-panel {
       position: fixed;
       top: calc(max(16px, env(safe-area-inset-top, 0px)) + 52px);
@@ -375,12 +379,13 @@
       transform: translateY(0) scale(1);
       pointer-events: auto;
     }
-    /* 收起后仍在视口内隐藏播放（移出屏幕会被浏览器暂停） */
+    /* 播放中：缩到角落但保持可见，避免被浏览器静音 */
     .music-panel.playing-bg {
       visibility: visible;
-      opacity: 0.001;
+      opacity: 1;
       pointer-events: none;
-      transform: none;
+      transform: scale(0.01);
+      transform-origin: top right;
       width: 330px;
       height: 86px;
       top: max(16px, env(safe-area-inset-top, 0px));
@@ -413,8 +418,16 @@
       letter-spacing: 0.04em;
       animation: musicTipPulse 1.6s ease-in-out infinite;
       pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.45s ease, transform 0.45s ease;
     }
-    .music-tip.hide { display: none; }
+    .music-tip.hide {
+      opacity: 0;
+      transform: translateY(-4px);
+      animation: none;
+      pointer-events: none;
+      visibility: hidden;
+    }
     @keyframes musicTipPulse {
       0%, 100% { transform: translateY(0); opacity: 0.95; }
       50% { transform: translateY(2px); opacity: 1; }
@@ -935,6 +948,107 @@
       overflow: hidden;
       z-index: 0;
     }
+    .date-modal-badge {
+      display: none;
+      position: relative;
+      z-index: 1;
+      margin: 0 auto 12px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--primary);
+      background: hsla(42, 52%, 48%, 0.12);
+      border: 1px solid hsla(42, 52%, 48%, 0.25);
+      width: fit-content;
+    }
+    .date-modal-card.is-special .date-modal-badge { display: inline-flex; }
+    .date-modal-card.is-special {
+      padding-top: 32px;
+      border-width: 2px;
+      box-shadow: 0 28px 70px rgba(0,0,0,0.28), 0 0 0 1px hsla(42, 60%, 55%, 0.2);
+    }
+    .date-modal-card.is-special .date-modal-emoji {
+      font-size: 48px;
+      margin-bottom: 14px;
+    }
+    .date-modal-card.is-special .date-modal-title {
+      font-size: 32px;
+      color: hsl(28, 30%, 22%);
+    }
+    .date-modal-card.is-special .date-modal-body {
+      color: hsl(25, 12%, 35%);
+      font-size: 14.5px;
+    }
+    /* 婚礼大日子 */
+    .date-modal-card.theme-wedding {
+      background: linear-gradient(160deg, #fff8e8 0%, #f7e7c8 45%, #f3d9b0 100%);
+      border-color: hsl(42, 55%, 48%);
+    }
+    .date-modal-card.theme-wedding .date-modal-badge {
+      background: var(--primary);
+      color: #fff;
+      border-color: transparent;
+    }
+    .date-modal-card.theme-wedding .date-modal-day { color: hsl(38, 50%, 38%); }
+    .date-modal-card.theme-wedding .date-modal-close {
+      min-width: 150px;
+      box-shadow: 0 8px 22px hsla(42, 60%, 45%, 0.45);
+    }
+    /* 相恋 */
+    .date-modal-card.theme-love {
+      background: linear-gradient(160deg, #fff5f7 0%, #fde8ee 50%, #f8d5e0 100%);
+      border-color: hsl(350, 40%, 70%);
+    }
+    .date-modal-card.theme-love .date-modal-badge {
+      color: hsl(350, 40%, 45%);
+      background: hsla(350, 45%, 70%, 0.18);
+      border-color: hsla(350, 40%, 65%, 0.35);
+    }
+    .date-modal-card.theme-love .date-modal-day { color: hsl(350, 35%, 48%); }
+    .date-modal-card.theme-love .date-modal-close {
+      background: linear-gradient(135deg, hsl(350, 45%, 62%), hsl(350, 40%, 48%));
+    }
+    /* 领证 */
+    .date-modal-card.theme-cert {
+      background: linear-gradient(160deg, #fffaf2 0%, #f4ebe0 55%, #ebe0d2 100%);
+      border-color: hsl(25, 30%, 55%);
+    }
+    .date-modal-card.theme-cert .date-modal-badge {
+      color: hsl(25, 35%, 38%);
+      background: hsla(25, 30%, 55%, 0.12);
+      border-color: hsla(25, 25%, 55%, 0.3);
+    }
+    .date-modal-card.theme-cert .date-modal-day { color: hsl(25, 30%, 40%); }
+    .date-modal-card.theme-cert .date-modal-close {
+      background: linear-gradient(135deg, hsl(25, 35%, 48%), hsl(25, 30%, 38%));
+    }
+    /* 幸运 13 */
+    .date-modal-card.theme-lucky {
+      background: linear-gradient(160deg, #f3faf5 0%, #e5f4ea 50%, #d4eadc 100%);
+      border-color: hsl(150, 30%, 45%);
+    }
+    .date-modal-card.theme-lucky .date-modal-badge {
+      color: hsl(150, 35%, 32%);
+      background: hsla(150, 30%, 45%, 0.14);
+      border-color: hsla(150, 28%, 45%, 0.3);
+    }
+    .date-modal-card.theme-lucky .date-modal-day { color: hsl(150, 28%, 35%); }
+    .date-modal-card.theme-lucky .date-modal-close {
+      background: linear-gradient(135deg, hsl(150, 32%, 42%), hsl(150, 30%, 32%));
+    }
+    /* 普通日子更简洁 */
+    .date-modal-card.is-normal {
+      background: #fffefb;
+      border-color: hsla(35, 20%, 82%, 0.8);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.14);
+    }
+    .date-modal-card.is-normal .date-modal-emoji { font-size: 30px; }
+    .date-modal-card.is-normal .date-modal-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 20px;
+      letter-spacing: 0.06em;
+    }
     .cal-meta {
       margin-top: 24px;
       font-size: 14px;
@@ -945,6 +1059,77 @@
     .cal-meta .sub {
       color: var(--muted-foreground);
       font-size: 13px;
+    }
+
+    /* 双十同喜 */
+    .twin-ten {
+      position: relative;
+      margin: 36px auto 8px;
+      max-width: 340px;
+      padding: 36px 22px 32px;
+      text-align: center;
+      border-radius: 18px;
+      background:
+        radial-gradient(ellipse 90% 70% at 50% 0%, hsla(42, 50%, 88%, 0.55), transparent 60%),
+        linear-gradient(165deg, #fffaf4 0%, #f7efe4 55%, #f3e6d6 100%);
+      border: 1px solid hsla(42, 35%, 70%, 0.35);
+      box-shadow: 0 12px 36px hsla(25, 20%, 20%, 0.06);
+      overflow: hidden;
+    }
+    .twin-ten::before,
+    .twin-ten::after {
+      content: '十';
+      position: absolute;
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 88px;
+      color: hsla(42, 40%, 55%, 0.07);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .twin-ten::before { top: 8px; left: 10px; }
+    .twin-ten::after { bottom: 4px; right: 10px; }
+    .twin-ten .pair {
+      position: relative;
+      z-index: 1;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 13px;
+      color: var(--primary);
+      letter-spacing: 0.1em;
+      line-height: 2;
+      margin-bottom: 18px;
+    }
+    .twin-ten .mark {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .twin-ten .mark .rule {
+      width: 28px;
+      height: 1px;
+      background: hsla(42, 40%, 55%, 0.45);
+    }
+    .twin-ten .title {
+      position: relative;
+      z-index: 1;
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: clamp(34px, 10vw, 42px);
+      color: var(--primary);
+      letter-spacing: 0.22em;
+      line-height: 1.2;
+      margin: 0 0 18px;
+      text-indent: 0.22em;
+    }
+    .twin-ten .body {
+      position: relative;
+      z-index: 1;
+      font-size: 13.5px;
+      color: var(--foreground);
+      letter-spacing: 0.06em;
+      line-height: 2.1;
     }
 
     .photo-grid {
@@ -1869,6 +2054,30 @@
                    scale(0.85);
       }
     }
+    @keyframes heartDrift {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.5) rotate(0deg);
+      }
+      12% {
+        opacity: 0.85;
+        transform: translate(calc(-50% + var(--dx, 0px) * 0.2), -20%) scale(1) rotate(-8deg);
+      }
+      70% {
+        opacity: 0.7;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx, 0px)), -110%) scale(0.9) rotate(12deg);
+      }
+    }
+    .date-modal-hearts .drift-heart {
+      position: absolute;
+      bottom: 8%;
+      pointer-events: none;
+      will-change: transform, opacity;
+      animation: heartDrift var(--dur, 2.8s) ease-out forwards;
+    }
     /* 文字点击涟漪 */
     .text-ripple {
       position: absolute;
@@ -2065,14 +2274,15 @@
   <div class="falling-petals" id="petals"></div>
 
   <!-- 音乐按钮 + 网易云播放器 -->
-  <button class="music-btn" id="musicBtn" aria-label="背景音乐" aria-expanded="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <button class="music-btn" id="musicBtn" aria-label="开启背景音乐" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M9 18V5l12-2v13"></path>
       <circle cx="6" cy="18" r="3"></circle>
       <circle cx="18" cy="16" r="3"></circle>
+      <line class="music-slash" x1="3.5" y1="3.5" x2="20.5" y2="20.5"></line>
     </svg>
   </button>
-  <div class="music-panel playing-bg" id="musicPanel" aria-hidden="true">
+  <div class="music-panel" id="musicPanel" aria-hidden="true">
     <iframe
       id="musicFrame"
       frameborder="no"
@@ -2083,16 +2293,17 @@
       height="86"
       title="网易云音乐"
       allow="autoplay"
-      src="https://music.163.com/outchain/player?type=2&id=2719538186&auto=1&height=66"
+      src="about:blank"
     ></iframe>
   </div>
-  <div class="music-tip" id="musicTip">轻触开启音乐 ♪</div>
+  <div class="music-tip" id="musicTip">点击音符开启音乐 ♪</div>
 
 
   <!-- 日历日期弹窗 -->
   <div class="date-modal" id="dateModal" aria-hidden="true">
-    <div class="date-modal-card" role="dialog" aria-modal="true" aria-labelledby="dateModalTitle">
+    <div class="date-modal-card" id="dateModalCard" role="dialog" aria-modal="true" aria-labelledby="dateModalTitle">
       <div class="date-modal-hearts" id="dateModalHearts"></div>
+      <div class="date-modal-badge" id="dateModalBadge">特别日子</div>
       <div class="date-modal-emoji" id="dateModalEmoji">✨</div>
       <p class="date-modal-day" id="dateModalDay">2026.09.20</p>
       <h3 class="date-modal-title" id="dateModalTitle">标题</h3>
@@ -2355,6 +2566,20 @@
         </article>
       </div>
 
+      <div class="twin-ten fade-up">
+        <div class="pair">
+          <p>阳历八月十日 · 领证成家</p>
+          <p>农历八月初十 · 执手成婚</p>
+        </div>
+        <div class="mark"><span class="rule"></span><span class="rule"></span></div>
+        <h3 class="title">双十同喜</h3>
+        <div class="body">
+          <p>同一份「初十」</p>
+          <p>一份写进红本本 · 一份写进婚礼里</p>
+          <p>合法与仪式，都刚好落在十</p>
+        </div>
+      </div>
+
       <div class="text-block fade-up">
         <p class="hand">婚礼日记</p>
         <p>我们将成为彼此紧紧依靠的家人</p>
@@ -2419,7 +2644,7 @@
           <div class="info">
             <h3>婚礼日期</h3>
             <p class="value">2026年9月20日</p>
-            <p class="sub">星期日</p>
+            <p class="sub">星期日 · 农历八月初十</p>
           </div>
         </div>
 
@@ -2945,59 +3170,83 @@
     var musicPanel = $('#musicPanel');
     var musicFrame = $('#musicFrame');
     var musicTip = $('#musicTip');
-    var musicOpen = false;
     var musicPlaying = false;
+    var musicHideTimer = null;
+    var musicTipTimer = null;
     var MUSIC_SRC = 'https://music.163.com/outchain/player?type=2&id=2719538186&auto=1&height=66';
 
     function hideMusicTip() {
       if (musicTip) musicTip.classList.add('hide');
+      if (musicTipTimer) {
+        clearTimeout(musicTipTimer);
+        musicTipTimer = null;
+      }
     }
+
+    // 进入页面短暂提示，约 3.5 秒后自动消失；滚动也会收起
+    musicTipTimer = setTimeout(hideMusicTip, 3500);
+    window.addEventListener('scroll', hideMusicTip, { passive: true, once: true });
 
     function playMusic() {
       if (!musicFrame) return;
-      // 重新加载 iframe 才能触发 auto 播放
+      if (musicHideTimer) {
+        clearTimeout(musicHideTimer);
+        musicHideTimer = null;
+      }
+      // 先完整展示播放器，方便浏览器允许自动播放
+      musicPanel.classList.remove('playing-bg');
+      musicPanel.classList.add('open');
+      musicPanel.setAttribute('aria-hidden', 'false');
+      musicBtn.setAttribute('aria-expanded', 'true');
       musicFrame.src = MUSIC_SRC + '&_t=' + Date.now();
       musicPlaying = true;
       musicBtn.classList.add('playing');
-      musicPanel.classList.add('playing-bg');
+      musicBtn.setAttribute('aria-label', '关闭背景音乐');
+      hideMusicTip();
+      // 约 2 秒后收起到角落继续播
+      musicHideTimer = setTimeout(function() {
+        if (!musicPlaying) return;
+        musicPanel.classList.remove('open');
+        musicPanel.classList.add('playing-bg');
+        musicBtn.setAttribute('aria-expanded', 'false');
+        musicPanel.setAttribute('aria-hidden', 'true');
+      }, 2000);
+    }
+
+    function stopMusic() {
+      if (!musicFrame) return;
+      if (musicHideTimer) {
+        clearTimeout(musicHideTimer);
+        musicHideTimer = null;
+      }
+      musicFrame.src = 'about:blank';
+      musicPlaying = false;
+      musicBtn.classList.remove('playing');
+      musicBtn.setAttribute('aria-label', '开启背景音乐');
       musicPanel.classList.remove('open');
-      musicOpen = false;
+      musicPanel.classList.remove('playing-bg');
       musicBtn.setAttribute('aria-expanded', 'false');
       musicPanel.setAttribute('aria-hidden', 'true');
       hideMusicTip();
     }
 
-    function stopMusic() {
-      if (!musicFrame) return;
-      // 网易云 iframe 无暂停 API，清空 src 即可停止
-      musicFrame.src = 'about:blank';
-      musicPlaying = false;
-      musicBtn.classList.remove('playing');
-      musicPanel.classList.remove('open');
-      musicPanel.classList.remove('playing-bg');
-      musicOpen = false;
-      musicBtn.setAttribute('aria-expanded', 'false');
-      musicPanel.setAttribute('aria-hidden', 'true');
-    }
-
     function toggleMusic(e) {
-      if (e) e.stopPropagation();
-      if (musicPlaying) {
-        stopMusic();
-      } else {
-        playMusic();
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
       }
+      if (musicPlaying) stopMusic();
+      else playMusic();
     }
 
     musicBtn.addEventListener('click', toggleMusic);
 
-    // 手机浏览器：首次触摸页面任意处自动开始播放（点音乐按钮除外）
+    // 首次点击/触摸页面任意处开始播放（点音符按钮交给按钮自己处理）
     var unlocked = false;
     function unlockMusicOnce(e) {
       if (unlocked) return;
       unlocked = true;
       document.removeEventListener('touchstart', unlockMusicOnce, true);
-      document.removeEventListener('touchend', unlockMusicOnce, true);
       document.removeEventListener('click', unlockMusicOnce, true);
       if (e && musicBtn && (e.target === musicBtn || musicBtn.contains(e.target))) {
         return;
@@ -3005,19 +3254,11 @@
       if (!musicPlaying) playMusic();
     }
     document.addEventListener('touchstart', unlockMusicOnce, { capture: true, passive: true });
-    document.addEventListener('touchend', unlockMusicOnce, { capture: true, passive: true });
     document.addEventListener('click', unlockMusicOnce, true);
 
-    // 微信内置浏览器
     document.addEventListener('WeixinJSBridgeReady', function() {
       if (!musicPlaying) playMusic();
     }, false);
-    if (typeof WeixinJSBridge !== 'undefined' && !musicPlaying) {
-      playMusic();
-    }
-
-    // 桌面端尝试进页即播
-    playMusic();
 
     // 滚出首屏后，音乐按钮改为浅色底，保证可读
     var heroEl = $('#hero');
@@ -3229,7 +3470,7 @@
       var textSel = [
         '.letter-greeting', '.letter-intro-title', '.text-soft', '.duo-caption',
         '.person-blurbs .blurb', '.invite-lead', '.invite-title', '.cal-meta',
-        '.story-lead', '.quote-chip', '.text-block', '.poem-block',
+        '.story-lead', '.quote-chip', '.twin-ten', '.text-block', '.poem-block',
         '.section-title', '.countdown-tip', '.story-copy', '.footer .thank-you',
         '.footer .invite', '.footer .invite-names'
       ].join(',');
@@ -3276,72 +3517,183 @@
       var heartsBox = $('#dateModalHearts');
       if (!modal) return;
 
+      var cardEl = $('#dateModalCard');
+      var badgeEl = $('#dateModalBadge');
+
       var SPECIAL = {
         1: {
+          theme: 'theme-love',
+          badge: '纪念 · 正式相恋',
           emoji: '🌙',
           title: '缘起的日子',
-          body: '2022年8月1日，我们正式相恋。<br/>点到「1」，像是宇宙提醒：<br/>所有的刚刚好，都从这一天开始。'
+          body: '2022年8月1日<br/>我们把「喜欢」说成了「在一起」。<br/><br/>点开这一天，像重新走一遍心动。',
+          btn: '好浪漫'
         },
         10: {
+          theme: 'theme-cert',
+          badge: '纪念 · 正式领证',
           emoji: '📜',
           title: '盖章的幸福',
-          body: '2026年8月10日，我们领证成为法律意义上的家人。<br/>红本本不大，却装得下两个人的余生。'
+          body: '阳历 2026年8月10日<br/>红本本落印，我们成为合法的家人。<br/><br/>而婚礼那天，正是农历八月初十。<br/>同一个「初十」——先有证，再有礼。',
+          btn: '双十同喜'
         },
         13: {
+          theme: 'theme-lucky',
+          badge: '双倍幸运日',
           emoji: '🍀',
-          title: '幸运的 13',
-          body: '2022.06.13 初次相遇<br/>2026.06.13 浪漫求婚<br/>同一个日子，隔了四年。<br/>原来幸运数字，是我们一起写出来的。'
+          title: '幸运的十三',
+          body: '2022.06.13 · 初次相遇<br/>2026.06.13 · 浪漫求婚<br/><br/>四年前遇见，四年后许诺。<br/>原来 13，是我们的暗号。',
+          btn: '太巧了'
         },
         20: {
+          theme: 'theme-wedding',
+          badge: '婚礼 · 大日子',
           emoji: '💍',
-          title: '我们的大日子',
-          body: '2026年9月20日 星期日 11:18<br/>大连新世界酒店<br/><br/>这一天，请你来见证——<br/>王世凯 ❤️ 刘鑫颖<br/>把「喜欢」说成「一辈子」。'
+          title: '我们结婚啦',
+          body: '2026年9月20日 星期日<br/>农历八月初十 · 吉时 11:18<br/>大连新世界酒店<br/><br/>阳历八月十日领证，农历八月初十成婚。<br/>王世凯 &amp; 刘鑫颖<br/>诚邀你见证这一天。',
+          btn: '我一定会来'
         }
       };
 
-      var FORTUNES = [
-        { emoji: '💌', title: '今日恋爱运', body: '适合给重要的人发一句「到时候见」。<br/>当然，最好是婚礼见。' },
-        { emoji: '☕', title: '小确幸提示', body: '记得准时到场哦。<br/>美好的仪式，从第一杯欢迎饮开始。' },
-        { emoji: '🌸', title: '花开的预告', body: '九月的风刚刚好。<br/>像你们的故事：不早不晚，正好遇见。' },
-        { emoji: '🥂', title: '举杯预演', body: '请提前练习微笑与掌声。<br/>因为那天，幸福会轮到每一位宾客。' },
-        { emoji: '⭐', title: '星象留言', body: '今日宜奔赴、宜见证、宜感动。<br/>忌缺席我们的大日子。' },
-        { emoji: '🎀', title: '伴手礼预言', body: '打开伴手礼的那一刻，<br/>你会收到一份来自新人的小心意。' },
-        { emoji: '🕊️', title: '温柔提醒', body: '婚礼是一场相聚。<br/>你的出现，本身就是最好的祝福。' },
-        { emoji: '📷', title: '闪光时刻', body: '请保持手机电量充足。<br/>因为幸福，值得被拍很多遍。' },
-        { emoji: '🌈', title: '天气心愿', body: '无论阴晴，心都是晴的。<br/>因为有你来，这一天就不会普通。' },
-        { emoji: '🫶', title: '座位暗号', body: '找到自己的座位后，<br/>先给旁边的人一个微笑吧。' }
-      ];
+      // 每个普通日期对应唯一文案（避开 1/10/13/20）
+      var DAY_NOTES = {
+        2:  { emoji: '💌', title: '迟到的情书', body: '如果幸福有回执，<br/>希望你也能签收这一份邀请。' },
+        3:  { emoji: '🌿', title: '慢慢喜欢', body: '好的感情不着急。<br/>像九月的风，温柔又准时。' },
+        4:  { emoji: '☕', title: '到场小贴士', body: '建议提前一点出发。<br/>美好的仪式，值得不慌不忙。' },
+        5:  { emoji: '🎀', title: '心意预告', body: '当天会有一份小心意。<br/>请带着笑容拆开它。' },
+        6:  { emoji: '🌊', title: '同频日子', body: '有些人一遇见，<br/>世界就开始同频。' },
+        7:  { emoji: '✨', title: '闪光备忘', body: '电量充满，笑容打开。<br/>幸福值得被记录很多遍。' },
+        8:  { emoji: '🕊️', title: '温柔邀约', body: '你的到来，本身就是祝福。<br/>我们在席间等你。' },
+        9:  { emoji: '🌸', title: '花期将至', body: '九月的花开得刚好。<br/>像这份缘分，不早不晚。' },
+        11: { emoji: '🥂', title: '举杯练习', body: '请提前准备好掌声。<br/>幸福环节会很多。' },
+        12: { emoji: '⭐', title: '宜奔赴', body: '今日宜奔赴、宜相聚。<br/>忌错过我们的大日子。' },
+        14: { emoji: '🫶', title: '邻座微笑', body: '入座后，先给旁边的人一个微笑。<br/>婚礼从善意开始。' },
+        15: { emoji: '🌙', title: '半月心愿', body: '半个月历翻到这里，<br/>心已经提前到了婚礼现场。' },
+        16: { emoji: '📷', title: '镜头准备', body: '请允许幸福入镜。<br/>我们也想留下你的笑容。' },
+        17: { emoji: '🌈', title: '晴天心境', body: '天气随缘，心情晴好。<br/>因为你要来。' },
+        18: { emoji: '🎶', title: '旋律预热', body: '当天会有熟悉的旋律响起。<br/>像我们故事的背景音。' },
+        19: { emoji: '⏳', title: '倒计时前夜', body: '婚礼前一天，请早些休息。<br/>明天，我们要见面啦。' },
+        21: { emoji: '🌅', title: '余韵还在', body: '大日子过后的第一天，<br/>幸福大概还在回味。' },
+        22: { emoji: '💞', title: '成双成对', body: '二二得四，四四如意。<br/>愿新人成双，宾客如意。' },
+        23: { emoji: '📍', title: '地点备忘', body: '大连新世界酒店<br/>中山区人民路41号<br/>记得存好地址。' },
+        24: { emoji: '🎁', title: '礼物心情', body: '最好的礼物是你本人。<br/>其余都是加分项。' },
+        25: { emoji: '🍁', title: '秋日序章', body: '秋天适合开始新的章节。<br/>也适合见证长久。' },
+        26: { emoji: '💫', title: '小幸运', body: '点到这一天，说明你很细心。<br/>细心的人，最懂祝福。' },
+        27: { emoji: '🥂', title: '敬未来', body: '敬相遇，敬相守，<br/>也敬每一位到场的你。' },
+        28: { emoji: '📖', title: '故事未完', body: '婚礼是高潮，不是结局。<br/>后面还有很长的日常。' },
+        29: { emoji: '🕯️', title: '暖光时刻', body: '灯光亮起时，请看向新人。<br/>那会是很美的一幕。' },
+        30: { emoji: '🏁', title: '月终寄语', body: '九月走到尽头，<br/>祝福不会结束。' }
+      };
 
-      function spawnMiniHearts() {
-        if (!heartsBox) return;
-        heartsBox.innerHTML = '';
-        for (var i = 0; i < 5; i++) {
-          var s = document.createElement('i');
-          s.style.cssText = 'position:absolute;left:' + (15 + Math.random() * 70) + '%;top:' + (60 + Math.random() * 25) + '%;width:10px;height:10px;color:hsla(42,70%,55%,0.55);animation:softFloat 1s ease-out forwards;animation-delay:' + (Math.random() * 0.2) + 's;';
-          s.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
-          s.style.setProperty('--dx', ((Math.random() - 0.5) * 40).toFixed(1) + 'px');
-          s.style.setProperty('--dy', (-30 - Math.random() * 40).toFixed(1) + 'px');
-          heartsBox.appendChild(s);
+      var heartTimer = null;
+      var heartBurstTimers = [];
+      var HEART_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" width="100%" height="100%"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+
+      function stopHeartRain() {
+        if (heartTimer) {
+          clearInterval(heartTimer);
+          heartTimer = null;
         }
+        heartBurstTimers.forEach(clearTimeout);
+        heartBurstTimers = [];
+        if (heartsBox) heartsBox.innerHTML = '';
+      }
+
+      function makeHeart(opts) {
+        var s = document.createElement('i');
+        var size = opts.size || 10;
+        s.className = opts.cls || '';
+        s.style.cssText = opts.css;
+        s.style.width = size + 'px';
+        s.style.height = size + 'px';
+        s.innerHTML = HEART_SVG;
+        s.style.setProperty('--dx', ((Math.random() - 0.5) * opts.dxRange).toFixed(1) + 'px');
+        if (opts.dyRange) {
+          s.style.setProperty('--dy', (-30 - Math.random() * opts.dyRange).toFixed(1) + 'px');
+        }
+        if (opts.dur) s.style.setProperty('--dur', opts.dur);
+        s.addEventListener('animationend', function() {
+          if (s.parentNode) s.parentNode.removeChild(s);
+        });
+        return s;
+      }
+
+      function spawnOneDriftHeart() {
+        if (!heartsBox) return;
+        var size = 8 + Math.floor(Math.random() * 10);
+        var hue = Math.random() > 0.45 ? '42,70%,55%' : '350,55%,62%';
+        var heart = makeHeart({
+          cls: 'drift-heart',
+          size: size,
+          dxRange: 70,
+          dur: (2.4 + Math.random() * 1.6).toFixed(2) + 's',
+          css: 'left:' + (8 + Math.random() * 84) + '%;color:hsla(' + hue + ',0.6);'
+        });
+        heartsBox.appendChild(heart);
+      }
+
+      function spawnMiniHearts(isSpecial) {
+        stopHeartRain();
+        if (!heartsBox) return;
+
+        if (!isSpecial) {
+          for (var i = 0; i < 3; i++) {
+            var s = makeHeart({
+              size: 10,
+              dxRange: 40,
+              dyRange: 40,
+              css: 'position:absolute;left:' + (15 + Math.random() * 70) + '%;top:' + (55 + Math.random() * 30) + '%;color:hsla(42,70%,55%,0.55);animation:softFloat 1s ease-out forwards;animation-delay:' + (Math.random() * 0.2) + 's;'
+            });
+            heartsBox.appendChild(s);
+          }
+          return;
+        }
+
+        // 特别日子：持续飘心
+        for (var j = 0; j < 6; j++) {
+          (function(delay) {
+            heartBurstTimers.push(setTimeout(spawnOneDriftHeart, delay));
+          })(j * 120);
+        }
+        heartTimer = setInterval(function() {
+          if (!modal.classList.contains('open')) {
+            stopHeartRain();
+            return;
+          }
+          spawnOneDriftHeart();
+          if (Math.random() > 0.55) spawnOneDriftHeart();
+        }, 420);
       }
 
       function openDate(day) {
-        var info = SPECIAL[day];
-        if (!info) {
-          info = FORTUNES[day % FORTUNES.length];
+        var special = SPECIAL[day];
+        var info = special || DAY_NOTES[day] || {
+          emoji: '✨', title: '九月碎片', body: '每一天都通往 9 月 20 日。<br/>我们在大日子等你。'
+        };
+
+        // 重置主题
+        cardEl.className = 'date-modal-card';
+        if (special) {
+          cardEl.classList.add('is-special', special.theme);
+          badgeEl.textContent = special.badge;
+          closeBtn.textContent = special.btn;
+        } else {
+          cardEl.classList.add('is-normal');
+          closeBtn.textContent = '好看';
         }
+
         dayEl.textContent = '2026.09.' + (day < 10 ? '0' + day : day);
         emojiEl.textContent = info.emoji;
         titleEl.textContent = info.title;
         bodyEl.innerHTML = info.body;
-        closeBtn.textContent = day === 20 ? '我一定会来' : '真好';
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
-        spawnMiniHearts();
+        spawnMiniHearts(!!special);
       }
 
       function closeDate() {
+        stopHeartRain();
         modal.classList.remove('open');
         modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
