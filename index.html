@@ -351,6 +351,36 @@
       box-shadow: 0 4px 20px rgba(212,175,55,0.35);
     }
     .music-btn.playing svg { animation: spin 4s linear infinite; }
+    .music-panel {
+      position: fixed;
+      top: calc(max(16px, env(safe-area-inset-top, 0px)) + 52px);
+      right: max(12px, env(safe-area-inset-right, 0px));
+      z-index: 99;
+      width: min(330px, calc(100vw - 24px));
+      padding: 8px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 10px 32px rgba(0,0,0,0.18);
+      border: 1px solid hsla(42, 40%, 70%, 0.35);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px) scale(0.96);
+      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+      overflow: hidden;
+    }
+    .music-panel.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+    .music-panel iframe {
+      display: block;
+      width: 100%;
+      max-width: 330px;
+      height: 86px;
+      border: 0;
+      margin: 0 auto;
+    }
 
     /* 向下滑动提示 */
     .scroll-hint {
@@ -1766,17 +1796,28 @@
   <!-- 飘落花瓣装饰 -->
   <div class="falling-petals" id="petals"></div>
 
-  <!-- 音乐按钮 -->
-  <button class="music-btn" id="musicBtn" aria-label="背景音乐">
+  <!-- 音乐按钮 + 网易云播放器 -->
+  <button class="music-btn" id="musicBtn" aria-label="背景音乐" aria-expanded="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M9 18V5l12-2v13"></path>
       <circle cx="6" cy="18" r="3"></circle>
       <circle cx="18" cy="16" r="3"></circle>
     </svg>
   </button>
-  <audio id="bgMusic" loop preload="none">
-    <source src="https://music.163.com/song/media/outer/url?id=1901371647.mp3" type="audio/mpeg" />
-  </audio>
+  <div class="music-panel" id="musicPanel" aria-hidden="true">
+    <iframe
+      id="musicFrame"
+      frameborder="no"
+      border="0"
+      marginwidth="0"
+      marginheight="0"
+      width="330"
+      height="86"
+      title="网易云音乐"
+      allow="autoplay"
+      data-src="https://music.163.com/outchain/player?type=2&id=2719538186&auto=1&height=66"
+    ></iframe>
+  </div>
 
   <!-- Toast 容器 -->
   <div class="toast-container" id="toastContainer"></div>
@@ -2616,26 +2657,51 @@
       showToast('回执已收到 ❤', 'success');
     });
 
-    // ========== 背景音乐 ==========
+    // ========== 背景音乐（网易云外链） ==========
     var musicBtn = $('#musicBtn');
-    var bgMusic = $('#bgMusic');
-    var isPlaying = false;
+    var musicPanel = $('#musicPanel');
+    var musicFrame = $('#musicFrame');
+    var musicOpen = false;
+    var musicLoaded = false;
 
-    function toggleMusic() {
-      if (isPlaying) {
-        bgMusic.pause();
-        musicBtn.classList.remove('playing');
-      } else {
-        bgMusic.volume = 0.4;
-        bgMusic.play().catch(function() {
-          showToast('请点击页面任意位置后再开启音乐', 'info');
-        });
-        musicBtn.classList.add('playing');
+    function ensureMusicLoaded() {
+      if (musicLoaded || !musicFrame) return;
+      var src = musicFrame.getAttribute('data-src');
+      if (src) {
+        musicFrame.setAttribute('src', src);
+        musicLoaded = true;
       }
-      isPlaying = !isPlaying;
     }
 
-    musicBtn.addEventListener('click', toggleMusic);
+    function toggleMusic() {
+      musicOpen = !musicOpen;
+      if (musicOpen) {
+        ensureMusicLoaded();
+        musicPanel.classList.add('open');
+        musicBtn.classList.add('playing');
+        musicBtn.setAttribute('aria-expanded', 'true');
+        musicPanel.setAttribute('aria-hidden', 'false');
+      } else {
+        musicPanel.classList.remove('open');
+        musicBtn.classList.remove('playing');
+        musicBtn.setAttribute('aria-expanded', 'false');
+        musicPanel.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    musicBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleMusic();
+    });
+    document.addEventListener('click', function(e) {
+      if (!musicOpen) return;
+      if (musicPanel.contains(e.target) || musicBtn.contains(e.target)) return;
+      musicOpen = false;
+      musicPanel.classList.remove('open');
+      musicBtn.classList.remove('playing');
+      musicBtn.setAttribute('aria-expanded', 'false');
+      musicPanel.setAttribute('aria-hidden', 'true');
+    });
 
     // 滚出首屏后，音乐按钮改为浅色底，保证可读
     var heroEl = $('#hero');
